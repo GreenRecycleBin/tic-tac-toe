@@ -8,9 +8,28 @@
 (defonce app-state (atom {:player "X"
                           :squares (vec (repeat board-size nil))}))
 
+(defn winner-for-line [squares line]
+  (if (apply = (map (partial get squares) line))
+    (get squares (first line))))
+
+(defn winner [state]
+  (let [lines [[0, 1, 2]
+               [3, 4, 5]
+               [6, 7, 8]
+               [0, 3, 6]
+               [1, 4, 7]
+               [2, 5, 8]
+               [0, 4, 8]
+               [2, 4, 6]]]
+    (some identity (for [line lines] (winner-for-line (:squares state) line)))))
+
+(defn status [app-state]
+  (if-let [winner (winner @app-state)]
+    (str "Winner: " winner)
+    (str "Next player: " (:player @app-state))))
+
 (defn info [app-state]
-  [:div {:class "game-info"}
-   [:div "Next player: " (:player @app-state)]])
+  [:div {:class "game-info"} (status app-state)])
 
 (defn square [app-state i]
   (letfn [(next-player [player]
@@ -27,7 +46,7 @@
           (square-on-click []
             #(swap! app-state (fn [state]
                                 (let [{:keys [player squares]} state]
-                                  (if-not (get squares i)
+                                  (if-not (or (get squares i) (winner state))
                                     (-> state
                                         (record-move player i)
                                         (toggle-player player))
