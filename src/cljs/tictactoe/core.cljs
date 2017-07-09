@@ -8,6 +8,9 @@
 (defonce app-state (atom {:player "X"
                           :squares (vec (repeat board-size nil))}))
 
+(defn all-squares-filled? [state]
+  (every? identity (:squares state)))
+
 (defn winner-for-line [squares line]
   (if (apply = (map (partial get squares) line))
     (get squares (first line))))
@@ -26,7 +29,9 @@
 (defn status [app-state]
   (if-let [winner (winner @app-state)]
     (str "Winner: " winner)
-    (str "Next player: " (:player @app-state))))
+    (if (all-squares-filled? @app-state)
+      (str "It's a draw")
+      (str "Next player: " (:player @app-state)))))
 
 (defn info [app-state]
   [:div {:class "game-info"} (status app-state)])
