@@ -32,6 +32,10 @@ ol {
   outline: none;
 }
 
+.square.winning {
+  background: red;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }

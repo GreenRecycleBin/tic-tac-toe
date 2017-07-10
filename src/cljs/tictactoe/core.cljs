@@ -44,7 +44,7 @@
   (if (apply = (map (partial get squares) line))
     (get squares (first line))))
 
-(defn winner [state]
+(defn winning-lines [state]
   (let [lines [[0, 1, 2]
                [3, 4, 5]
                [6, 7, 8]
@@ -53,7 +53,16 @@
                [2, 5, 8]
                [0, 4, 8]
                [2, 4, 6]]]
-    (some identity (for [line lines] (winner-for-line (:squares state) line)))))
+    (for [line lines
+          :when (winner-for-line (:squares state) line)]
+      line)))
+
+(defn winning-positions [state]
+  (into #{} (flatten (winning-lines state))))
+
+(defn winner [state]
+  (let [winning-line (first (winning-lines state))]
+    (winner-for-line (:squares state) winning-line)))
 
 (defn status [app-state]
   (if-let [winner (winner @app-state)]
@@ -88,7 +97,10 @@
                                         (toggle-player player))
                                     state)))))]
     [:button.square
-     {:key (str "square-" i) :on-click (square-on-click)}
+     {:key (str "square-" i)
+      :on-click (square-on-click)
+      :class (when (some #{i} (winning-positions @app-state))
+              "winning")}
      (get-in @app-state [:squares i])]))
 
 (defn row [app-state i xs]
