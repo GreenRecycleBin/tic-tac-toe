@@ -4,19 +4,19 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.562" :scope "provided"]
+  :dependencies [[bk/ring-gzip "0.2.1"]
                  [com.cognitect/transit-clj "0.8.300"]
-                 [ring "1.6.1"]
-                 [ring/ring-defaults "0.3.0"]
-                 [bk/ring-gzip "0.2.1"]
-                 [lambdaisland/ring.middleware.logger "0.5.1"]
+                 [com.stuartsierra/component "0.3.2"]
                  [compojure "1.6.0"]
                  [environ "1.1.0"]
-                 [com.stuartsierra/component "0.3.2"]
-                 [org.danielsz/system "0.4.0"]
+                 [lambdaisland/ring.middleware.logger "0.5.1"]
+                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojurescript "1.9.562" :scope "provided"]
                  [org.clojure/tools.namespace "0.2.11"]
-                 [reagent "0.6.0"]]
+                 [org.danielsz/system "0.4.0"]
+                 [reagent "0.6.0"]
+                 [ring "1.6.1"]
+                 [ring/ring-defaults "0.3.0"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-environ "1.1.0"]]
@@ -97,11 +97,11 @@
   :doo {:build "test"}
 
   :profiles {:dev
-             {:dependencies [[figwheel "0.5.10"]
+             {:dependencies [[com.cemerick/piggieback "0.2.1"]
+                             [figwheel "0.5.10"]
                              [figwheel-sidecar "0.5.10"]
-                             [com.cemerick/piggieback "0.2.1"]
-                             [org.clojure/tools.nrepl "0.2.13"]
                              [lein-doo "0.1.7"]
+                             [org.clojure/tools.nrepl "0.2.13"]
                              [reloaded.repl "0.2.3"]]
 
               :plugins [[lein-figwheel "0.5.10"]
