@@ -1,12 +1,41 @@
 (ns tictactoe.core
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require [historian.core :as hist]
+            [reagent.core :as reagent :refer [atom]]))
 
 (enable-console-print!)
 
 (defonce board-size 9)
 (defonce row-count 3)
-(defonce app-state (atom {:player "X"
-                          :squares (vec (repeat board-size nil))}))
+
+(defonce app-state (do
+                     (hist/replace-library! (atom []))
+                     (hist/replace-prophecy! (atom []))
+                     (doto (atom {:move 0
+                                  :player "X"
+                                  :squares (vec (repeat board-size nil))})
+                       (hist/record! :app-state))))
+
+(defn move [app-state i]
+  (letfn [(jump-to-move [i]
+            #(let [move (:move @app-state)
+                   distance (- i move)]
+               (if (pos? distance)
+                 (dotimes [_ distance]
+                   (hist/redo!))
+                 (dotimes [_ (- distance)]
+                   (hist/undo!)))))]
+    (let [description (if (zero? i)
+                        "Game start"
+                        (str "Move #" i))]
+      [:li {:key (str "move-" i)}
+       [:a {:href "#" :on-click (jump-to-move i)} (if (= i (:move @app-state))
+                                                      [:b description]
+                                                      description)]])))
+
+(defn moves [app-state]
+  [:ol (doall (map (partial move app-state)
+                   (range (+ (count @(hist/get-library-atom))
+                             (count @(hist/get-prophecy-atom))))))])
 
 (defn all-squares-filled? [state]
   (every? identity (:squares state)))
@@ -34,7 +63,7 @@
       (str "Next player: " (:player @app-state)))))
 
 (defn info [app-state]
-  [:div {:class "game-info"} (status app-state)])
+  [:div {:class "game-info"} [:div (status app-state)] (moves app-state)])
 
 (defn square [app-state i]
   (letfn [(next-player [player]
@@ -46,7 +75,9 @@
             (assoc state :player (next-player player)))
 
           (record-move [state player i]
-            (assoc-in state [:squares i] player))
+            (-> state
+                (assoc-in [:squares i] player)
+                (update-in [:move] inc)))
 
           (square-on-click []
             #(swap! app-state (fn [state]

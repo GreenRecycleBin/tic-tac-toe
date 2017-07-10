@@ -9,6 +9,7 @@
                  [com.stuartsierra/component "0.3.2"]
                  [compojure "1.6.0"]
                  [environ "1.1.0"]
+                 [historian "1.1.1"]
                  [lambdaisland/ring.middleware.logger "0.5.1"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.562" :scope "provided"]
